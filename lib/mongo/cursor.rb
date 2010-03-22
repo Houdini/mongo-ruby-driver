@@ -21,7 +21,7 @@ module Mongo
 
     attr_reader :collection, :selector, :admin, :fields,
       :order, :hint, :snapshot, :timeout,
-      :full_collection_name
+      :full_collection_name, :ignore
 
     # Create a new cursor.
     #
@@ -38,6 +38,7 @@ module Mongo
 
       @selector   = convert_selector_for_query(options[:selector])
       @fields     = convert_fields_for_query(options[:fields])
+      @fields     = convert_fields_for_query(options[:ignore], 0) if options[:ignore] unless @fields
       @admin      = options[:admin]    || false
       @skip       = options[:skip]     || 0
       @limit      = options[:limit]    || 0
@@ -273,14 +274,14 @@ module Mongo
     # Convert the +:fields+ parameter from a single field name or an array
     # of fields names to a hash, with the field names for keys and '1' for each
     # value.
-    def convert_fields_for_query(fields)
+    def convert_fields_for_query(fields, available = 1)
       case fields
         when String, Symbol
-          {fields => 1}
+          {fields => available}
         when Array
           return nil if fields.length.zero?
           returning({}) do |hash|
-            fields.each { |field| hash[field] = 1 }
+            fields.each { |field| hash[field] = available }
           end
       end
     end

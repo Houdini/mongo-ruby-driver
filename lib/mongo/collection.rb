@@ -133,6 +133,7 @@ module Mongo
     def find(selector={}, opts={})
       fields = opts.delete(:fields)
       fields = ["_id"] if fields && fields.empty?
+      ignore = opts.delete :ignore
       skip   = opts.delete(:skip) || skip || 0
       limit  = opts.delete(:limit) || 0
       sort   = opts.delete(:sort)
@@ -149,7 +150,7 @@ module Mongo
       end
       raise RuntimeError, "Unknown options [#{opts.inspect}]" unless opts.empty?
 
-      cursor = Cursor.new(self, :selector => selector, :fields => fields, :skip => skip, :limit => limit,
+      cursor = Cursor.new(self, :selector => selector, :fields => fields, :ignore => ignore, :skip => skip, :limit => limit,
                           :order => sort, :hint => hint, :snapshot => snapshot, :timeout => timeout)
       if block_given?
         yield cursor
