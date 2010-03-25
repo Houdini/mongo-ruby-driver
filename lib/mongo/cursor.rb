@@ -37,8 +37,12 @@ module Mongo
       @connection = @db.connection
 
       @selector   = convert_selector_for_query(options[:selector])
-      @fields     = convert_fields_for_query(options[:fields])
-      @fields     = convert_fields_for_query(options[:ignore], 0) if options[:ignore] unless @fields
+
+      @fields     = convert_fields_for_query options[:fields]
+      if options[:ignore]
+        @fields ||= {}
+        @fields.merge! convert_fields_for_query(options[:ignore], 0)
+      end
       @admin      = options[:admin]    || false
       @skip       = options[:skip]     || 0
       @limit      = options[:limit]    || 0
@@ -283,6 +287,8 @@ module Mongo
           returning({}) do |hash|
             fields.each { |field| hash[field] = available }
           end
+        when Hash
+          return fields  
       end
     end
 
