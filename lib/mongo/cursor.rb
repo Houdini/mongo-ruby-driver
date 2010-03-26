@@ -39,10 +39,6 @@ module Mongo
       @selector   = convert_selector_for_query(options[:selector])
 
       @fields     = convert_fields_for_query options[:fields]
-      if options[:ignore]
-        @fields ||= {}
-        @fields.merge! convert_fields_for_query(options[:ignore], 0)
-      end
       @admin      = options[:admin]    || false
       @skip       = options[:skip]     || 0
       @limit      = options[:limit]    || 0
@@ -278,14 +274,14 @@ module Mongo
     # Convert the +:fields+ parameter from a single field name or an array
     # of fields names to a hash, with the field names for keys and '1' for each
     # value.
-    def convert_fields_for_query(fields, available = 1)
+    def convert_fields_for_query(fields)
       case fields
         when String, Symbol
-          {fields => available}
+          {fields => 1}
         when Array
           return nil if fields.length.zero?
           returning({}) do |hash|
-            fields.each { |field| hash[field] = available }
+            fields.each { |field| hash[field] = 1 }
           end
         when Hash
           return fields  

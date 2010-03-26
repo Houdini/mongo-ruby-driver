@@ -37,20 +37,6 @@ class CursorTest < Test::Unit::TestCase
       assert @cursor.fields == {:name => 1, :date => 0}
     end    
 
-    should "set ignore" do
-      assert_nil @cursor.fields
-
-      @cursor = Cursor.new(@collection, :ignore => [:name, :date])
-      assert @cursor.fields == {:name => 0, :date => 0}
-    end
-
-    should "set fields and ignore params" do
-      assert_nil @cursor.fields
-
-      @cursor = Cursor.new(@collection, :ignore => :name, :fields => :date)
-      assert @cursor.fields == {:name => 0, :date => 1}
-    end
-
     should "set limit" do
       assert_equal 0, @cursor.limit
 
